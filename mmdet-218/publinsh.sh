@@ -1,0 +1,1 @@
+python ./tools/model_converters/publish_model.py ./work_dirs/swin_s/epoch_36.pth ./ckpt/swin_s_epoch36.pth

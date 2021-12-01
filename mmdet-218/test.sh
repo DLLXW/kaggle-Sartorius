@@ -1,0 +1,1 @@
+python tools/test.py ./qyl_config/swin_s.py ./work_dirs/swin_s/latest.pth --eval bbox segm
