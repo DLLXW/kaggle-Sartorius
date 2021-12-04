@@ -347,7 +347,7 @@ optimizer = dict(
             relative_position_bias_table=dict(decay_mult=0.0),
             norm=dict(decay_mult=0.0))))
 optimizer_config = dict(
-    grad_clip=True,
+    grad_clip=None,
     type='DistOptimizerHook',
     update_interval=1,
     coalesce=True,
