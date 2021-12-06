@@ -135,32 +135,40 @@ img_norm_cfg = dict(
 train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='LoadAnnotations', with_bbox=True, with_mask=True),
-    dict(type='RandomFlip', flip_ratio=0.5),
+    #dict(type='RandomFlip', flip_ratio=0.5),
+    # dict(
+    #     type='Resize',
+    #     #img_scale=[(1333, 1333), (1280, 1280), (1024, 1024)],#[(1040,1408),(1300,1760)],
+    #     img_scale=[(1040,1408),(1300,1760)],
+    #     multiscale_mode='value',
+    #     keep_ratio=True),
+    dict(type='RandomFlip', direction=['horizontal', 'vertical'], flip_ratio=0.5),
     dict(
         type='AutoAugment',
         policies=[[{
             'type':
             'Resize',
-            'img_scale': [(520, 704), (780, 1056), (1040, 1408)],
+            #'img_scale': [(520, 704), (780, 1056), (1040, 1408)],
+            'img_scale': [(780, 1056), (910,1232), (1040, 1408)],
             'multiscale_mode':
             'value',
             'keep_ratio':
             True
         }],
-                  [{
+                [{
                       'type': 'Resize',
-                      'img_scale': [(520, 704), (780, 1056), (1040, 1408)],
+                      'img_scale': [(780, 1056), (910,1232), (1040, 1408)],
                       'multiscale_mode': 'value',
                       'keep_ratio': True
                   }, {
                       'type': 'RandomCrop',
                       'crop_type': 'absolute_range',
-                      'crop_size': (384, 600),
+                      'crop_size': (520,704),#(384, 600),
                       'allow_negative_crop': True
                   }, {
                       'type':
                       'Resize',
-                      'img_scale': [(520, 704), (780, 1056), (1040, 1408)],
+                      'img_scale': [(780, 1056), (910,1232), (1040, 1408)],
                       'multiscale_mode':
                       'value',
                       'override':
@@ -172,12 +180,12 @@ train_pipeline = [
     dict(
         type='Albu',
         transforms=[
-                #dict(type='ShiftScaleRotate', shift_limit=0.0625,
-                #     scale_limit=0.15, rotate_limit=15, p=0.4),
+                dict(type='ShiftScaleRotate', shift_limit=0.0625,
+                    scale_limit=0.15, rotate_limit=15, p=0.4),
                 #dict(type='RandomBrightnessContrast', brightness_limit=0.2,
-                #    contrast_limit=0.2, p=0.5),
+                #   contrast_limit=0.2, p=0.5),
                 dict(type='IAAAffine', shear=(-10.0, 10.0), p=0.4),
-                dict(type='CLAHE', p=0.5),
+                dict(type='CLAHE', p=0.25),
                 dict(
                     type="OneOf",
                     transforms=[
@@ -209,7 +217,7 @@ test_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(
         type='MultiScaleFlipAug',
-        img_scale=(1040, 1408),
+        img_scale=(1040,1408),#[(1040,1408),(1300,1760)],
         flip=False,
         transforms=[
             dict(type='Resize', keep_ratio=True),
@@ -274,16 +282,16 @@ lr_config = dict(
     min_lr=1e-06,
     by_epoch=False)
 #
-runner = dict(type='EpochBasedRunner', max_epochs=36)
-checkpoint_config = dict(interval=1)
+runner = dict(type='EpochBasedRunner', max_epochs=72)
+checkpoint_config = dict(interval=8)
 log_config = dict(interval=20, hooks=[dict(type='TextLoggerHook')])
 custom_hooks = [dict(type='NumClassCheckHook')]
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-load_from ='./work_dirs/swin_s_coco/epoch_36.pth'#None
+load_from =None
 resume_from = None
 workflow = [('train', 1)]
 pretrained = 'https://github.com/SwinTransformer/storage/releases/download/v1.0.0/swin_small_patch4_window7_224.pth'
 fp16 = dict(loss_scale=dict(init_scale=512))
-work_dir = './work_dirs/swin_s'
+work_dir = './work_dirs/swin_s_coco'
 gpu_ids = [3]
